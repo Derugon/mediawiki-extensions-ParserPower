@@ -63,9 +63,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function trimRender($parser, $frame, $params) {
-		return [ isset($params[0]) ? trim($frame->expand($params[0])) : '',
-			'noparse' => false
-		];
+		return isset($params[0]) ? trim($frame->expand($params[0])) : '';
 	}
 
 	/**
@@ -79,9 +77,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function uescRender($parser, $frame, $params) {
-		return [ isset($params[0]) ? ParserPower::unescape(trim($frame->expand($params[0]))) : '',
-			'noparse' => false
-		];
+		return isset($params[0]) ? [ ParserPower::unescape(trim($frame->expand($params[0]))), 'noparse' => false ] : '';
 	}
 
 	/**
@@ -96,11 +92,13 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function uescnowikiRender($parser, $frame, $params) {
-		$text = isset($params[0]) ? ParserPower::unescape(trim($frame->expand($params[0]))) : '';
+		$text = isset($params[0]) ? trim($frame->expand($params[0])) : '';
 
-		return [ '<nowiki>' . $text . '</nowiki>',
-			'noparse' => false
-		];
+		if ($text !== '') {
+			return [ '<nowiki>' . ParserPower::unescape($text) . '</nowiki>', 'noparse' => false ];
+		} else {
+			return '';
+		}
 	}
 
 	/**
@@ -114,9 +112,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function trimuescRender($parser, $frame, $params) {
-		return [ isset($params[0]) ? trim(ParserPower::unescape($frame->expand($params[0]))) : '',
-			'noparse' => false
-		];
+		return isset($params[0]) ? [ trim(ParserPower::unescape($frame->expand($params[0]))), 'noparse' => false ] : '';
 	}
 
 	/**
@@ -135,12 +131,9 @@ final class SimpleFunctions {
 		$text = $parser->replaceVariables($text, $frame);
 
 		if ($text) {
-			return [ preg_replace_callback('/\[\[(.*?)\]\]/', 'self::linkpageReplace', $text),
-				'noparse' => false,
-				'markerType' => 'none'
-			];
+			return [ preg_replace_callback('/\[\[(.*?)\]\]/', 'self::linkpageReplace', $text), 'markerType' => 'none' ];
 		} else {
-			return ['', 'markerType' => 'none' ];
+			return [ '', 'markerType' => 'none' ];
 		}
 	}
 
@@ -173,10 +166,7 @@ final class SimpleFunctions {
 		$text = $parser->replaceVariables($text, $frame);
 
 		if ($text) {
-			return [ preg_replace_callback('/\[\[(.*?)\]\]/', 'self::linktextReplace', $text),
-				'noparse' => false,
-				'markerType' => 'none'
-			];
+			return [ preg_replace_callback('/\[\[(.*?)\]\]/', 'self::linktextReplace', $text), 'markerType' => 'none' ];
 		} else {
 			return [ '', 'markerType' => 'none' ];
 		}
@@ -213,7 +203,7 @@ final class SimpleFunctions {
 
 		$text = $parser->replaceVariables($text, $frame);
 
-		return [ $text, 'noparse' => false, 'markerType' => 'none' ];
+		return [ $text, 'markerType' => 'none' ];
 	}
 
 	/**
@@ -251,11 +241,11 @@ final class SimpleFunctions {
 			$inValue = trim($frame->expand($param));
 
 			if ($inValue !== '') {
-				return [$inValue, 'noparse' => false];
+				return $inValue;
 			}
 		}
 
-		return ['', 'noparse' => false];
+		return '';
 	}
 
 	/**
@@ -268,16 +258,15 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function ueorRender($parser, $frame, $params) {
-
 		foreach ($params as $param) {
 			$inValue = trim($frame->expand($param));
 
 			if ($inValue !== '') {
-				return [ParserPower::unescape($inValue), 'noparse' => false];
+				return [ ParserPower::unescape($inValue), 'noparse' => false ];
 			}
 		}
 
-		return ['', 'noparse' => false];
+		return '';
 	}
 
 	/**
@@ -318,7 +307,7 @@ final class SimpleFunctions {
 			ParserPower::unescape(trim($frame->expand($params[1], PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES))) : 'x';
 		$pattern = isset($params[2]) ? $params[2] : 'x';
 
-		return [ParserPower::applyPattern($parser, $frame, $inValue, $token, $pattern), 'noparse' => false];
+		return [ ParserPower::applyPattern($parser, $frame, $inValue, $token, $pattern), 'noparse' => false ];
 	}
 
 	/**
@@ -340,9 +329,9 @@ final class SimpleFunctions {
 				'x';
 			$pattern = isset($params[2]) ? $params[2] : 'x';
 
-			return [ParserPower::applyPattern($parser, $frame, $inValue, $token, $pattern), 'noparse' => false];
+			return [ ParserPower::applyPattern($parser, $frame, $inValue, $token, $pattern), 'noparse' => false ];
 		} else {
-			return [ParserPower::unescape($default), 'noparse' => false];
+			return [ ParserPower::unescape($default), 'noparse' => false ];
 		}
 	}
 
@@ -370,12 +359,12 @@ final class SimpleFunctions {
 					$keyFound = true;
 				}
 				if ($keyFound && count($pair) > 1) {
-					return [ParserPower::unescape(trim($pair[1])), 'noparse' => false];
+					return [ ParserPower::unescape(trim($pair[1])), 'noparse' => false ];
 				}
 			}
-			return [ParserPower::unescape(trim($frame->expand($default))), 'noparse' => false];
+			return [ ParserPower::unescape(trim($frame->expand($default))), 'noparse' => false ];
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -401,7 +390,7 @@ final class SimpleFunctions {
 			}
 		}
 
-		return [$output, 'noparse' => false];
+		return $output;
 	}
 	
 	public static function arraymapRender($parser, $frame, $args) {
