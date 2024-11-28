@@ -199,11 +199,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function escRender($text, $attribs, $parser, $frame) {
-		$text = ParserPower::escape($text);
-
-		$text = $parser->replaceVariables($text, $frame);
-
-		return [ $text, 'markerType' => 'none' ];
+		return [ ParserPower::escape($text), 'markerType' => 'none' ];
 	}
 
 	/**
