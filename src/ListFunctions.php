@@ -5,6 +5,7 @@
 namespace MediaWiki\Extension\ParserPower;
 
 use Countable;
+use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
@@ -893,17 +894,8 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $inValues as $value ) {
 				if ( $value !== '' ) {
-					$result = self::applyFieldPatternWithIndex(
-						$value,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$result = ParserPower::unescape( $result );
-					$result = ParserPower::evaluateUnescaped( $parser, $frame, $result, ParserPower::WITH_ARGS );
+					$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+					$result = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $index );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
@@ -914,9 +906,8 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $inValues as $value ) {
 				if ( $value !== '' ) {
-					$result = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$result = ParserPower::unescape( $result );
-					$result = ParserPower::evaluateUnescaped( $parser, $frame, $result, ParserPower::WITH_ARGS );
+					$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+					$result = $operation->apply( [ $value ], $index );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
@@ -1165,17 +1156,8 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $inValues as $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyFieldPatternWithIndex(
-						$value,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+					$key = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $index );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
@@ -1187,9 +1169,8 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $inValues as $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+					$key = $operation->apply( [ $value ], $index );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
@@ -1389,17 +1370,8 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $values as $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyFieldPatternWithIndex(
-						$value,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+					$key = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $index );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
 				}
@@ -1408,9 +1380,8 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $values as $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+					$key = $operation->apply( [ $value ], $index );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
 				}
@@ -1697,16 +1668,8 @@ final class ListFunctions {
 			$tokenCount = count( $tokens );
 			foreach ( $inValues as $inValue ) {
 				if ( $inValue !== '' ) {
-					$outValue = self::applyFieldPatternWithIndex(
-						$inValue,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$outValue = ParserPower::unescape( $outValue );
+					$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+					$outValue = $operation->apply( explode( $fieldSep, $inValue, $tokenCount ), $index );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;
@@ -1716,8 +1679,8 @@ final class ListFunctions {
 		} else {
 			foreach ( $inValues as $inValue ) {
 				if ( $inValue !== '' ) {
-					$outValue = self::applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern );
-					$outValue = ParserPower::unescape( $outValue );
+					$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+					$outValue = $operation->apply( [ $inValue ], $index );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;
