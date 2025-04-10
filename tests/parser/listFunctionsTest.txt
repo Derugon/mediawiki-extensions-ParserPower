@@ -814,7 +814,7 @@ numeric desc: "6!6!4!4!3!3!3!2!1!1"
 "{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = unknown }}"
 "{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = map/value }}"
 !! html/php
-<p>", , , , , , , , , "
+<p>""
 "x y, x y, x y, x y, x y, x y, x y, x y, x y, x y"
 "a, -b, c, d, e, -f, -g, h, i, -j"
 </p>
