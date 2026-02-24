@@ -76,18 +76,19 @@ class ListMapFunction extends ListFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$template = $params->get( 'template' );
-		$fieldSep = $params->get( 'fieldsep' );
-
-		$sortMode = $params->get( 'sortmode' );
-		$sortOptions = $sortMode > 0 ? $params->get( 'sortoptions' ) : 0;
-		$sorter = new ListSorter( $sortOptions );
-
 		$duplicates = $count > 1 ? $params->get( 'duplicates' ) : 0;
 
 		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
+			$count = count( $inValues );
 		}
+
+		$sortMode = $count > 1 ? $params->get( 'sortmode' ) : 0;
+		$sortOptions = $sortMode > 0 ? $params->get( 'sortoptions' ) : 0;
+		$sorter = new ListSorter( $sortOptions );
+
+		$template = $params->get( 'template' );
+		$fieldSep = $params->get( 'fieldsep' );
 
 		if ( $template !== '' ) {
 			if ( $sortMode & self::SORTMODE_PRE ) {
