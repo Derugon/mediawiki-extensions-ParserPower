@@ -156,7 +156,8 @@ class ListMergeFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( empty( $inValues ) ) {
+		$count = count( $inValues );
+		if ( $count === 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
@@ -164,7 +165,7 @@ class ListMergeFunction extends ListFunction {
 		$mergeTemplate = $params->get( 'mergetemplate' );
 		$fieldSep = $params->get( 'fieldsep' );
 
-		$sortMode = $params->get( 'sortmode' );
+		$sortMode = $count > 1 ? $params->get( 'sortmode' ) : 0;
 		$sortOptions = $sortMode > 0 ? $params->get( 'sortoptions' ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
