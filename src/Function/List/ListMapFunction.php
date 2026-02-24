@@ -71,7 +71,8 @@ class ListMapFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( empty( $inValues ) ) {
+		$count = count( $inValues );
+		if ( $count === 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
@@ -82,7 +83,7 @@ class ListMapFunction extends ListFunction {
 		$sortOptions = $sortMode > 0 ? $params->get( 'sortoptions' ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
-		$duplicates = $params->get( 'duplicates' );
+		$duplicates = $count > 1 ? $params->get( 'duplicates' ) : 0;
 
 		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
