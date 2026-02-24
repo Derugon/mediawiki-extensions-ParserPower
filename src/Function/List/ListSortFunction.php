@@ -81,18 +81,29 @@ class ListSortFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$values = ListUtils::explode( $inSep, $inList );
 
-		if ( empty( $values ) ) {
+		$count = count( $values );
+		if ( $count === 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		} elseif ( $count === 1 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $values ) );
 		}
 
-		$template = $params->get( 'template' );
-		$subsort = $params->get( 'subsort' );
-		$subsortOptions = $subsort ? $params->get( 'subsortoptions' ) : null;
 		$duplicates = $params->get( 'duplicates' );
 
 		if ( $duplicates & self::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
+			$count = count( $values );
+			if ( $count === 0 ) {
+				return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+			} elseif ( $count === 1 ) {
+				return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $values ) );
+			}
 		}
+
+		$subsort = $params->get( 'subsort' );
+		$subsortOptions = $subsort ? $params->get( 'subsortoptions' ) : null;
+
+		$template = $params->get( 'template' );
 
 		if ( $template !== '' ) {
 			$fieldSep = $params->get( 'fieldsep' );
